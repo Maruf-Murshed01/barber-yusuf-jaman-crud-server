@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
-const uri = "mongodb+srv://barberDb:bOkBvPZUKRgIXM1m@cluster0.hqbzo.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DBUSER}:${process.env.DBPASS}@cluster0.hqbzo.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run(){
@@ -17,19 +17,24 @@ async function run(){
         const beardsCollection = await client.db('barberYusuf').collection('beards')
         const reviewsCollection = await client.db('barberYusuf').collection('reviews')
 
-        //get or read api
+        //get 
+        //some services at home
         app.get('/homeservices', async(req, res)=>{
             const query = {}
             const cursor = await serviceCollection.find(query).limit(3).toArray()
             res.send(cursor)
         })
 
+        //get
+        //all services at home
         app.get('/allservices', async(req, res)=>{
             const query = {}
             const cursor = await serviceCollection.find(query).toArray()
             res.send(cursor)
         })
 
+        //get
+        //specific service
         app.get('/services/:id', async(req, res)=>{
             const id = req.params.id
             const query = {_id: new ObjectId(id)}
@@ -37,18 +42,24 @@ async function run(){
             res.send(service)
         })
 
+        //get
+        //all time schedule
         app.get('/times', async(req, res)=>{
             const query = {}
             const cursor = await timesCollection.find(query).toArray()
             res.send(cursor)
         })
 
+        //get
+        //all beard style
         app.get('/beards', async(req, res)=>{
             const query = {}
             const cursor = await beardsCollection.find(query).toArray()
             res.send(cursor)
         })
 
+        //get
+        //reviews
         app.get('/reviews', async(req, res)=>{
             const serviceid = req.query.serviceid
             const query = {serviceid: serviceid}    
@@ -56,6 +67,8 @@ async function run(){
             res.send(cursor)
         })
 
+        //get
+        //only my reviews
         app.get('/myreviews', async(req, res)=>{
             const myemail = req.query.email
             const query = {email: myemail}
@@ -64,14 +77,16 @@ async function run(){
         })
 
 
-        //post review
+        //post 
+        //personal review
         app.post('/reviews', async(req, res)=>{
             const review = req.body
             const cursor = await reviewsCollection.insertOne(review)
             res.send(cursor)
         })
 
-        //update review
+        //update 
+        //my review
         app.patch('/myreviews/:id', async(req, res)=>{
             const id = req.params.id
             const newmessage = req.body.change
@@ -87,7 +102,8 @@ async function run(){
             res.send(cursor);
         })
 
-        //delete review
+        //delete 
+        //my review
         app.delete('/myreviews/:id', async(req, res)=>{
             const id = req.params.id
             const query = {_id: new ObjectId(id)}
